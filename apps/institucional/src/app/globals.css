@@ -1,0 +1,12 @@
+/* Importa a base do Tailwind */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Importa as variáveis de CSS (:root) do pacote compartilhado */
+@import "@goldenbear/tailwind-config/tailwind-base.css";
+
+/* Estilos globais específicos do site institucional (se houver) */
+body {
+  /* ... */
+}
