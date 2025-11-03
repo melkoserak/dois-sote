@@ -2,17 +2,17 @@
 
 import * as React from "react"
 import { Check } from "lucide-react"
-import { useDebounce } from "@/hooks/useDebounce" // Importe o hook
+import { useDebounce } from "../hooks/useDebounce" // Importe o hook
 
-import { cn, removeAccents } from "@/lib/utils"
+import { cn, removeAccents } from "../lib/utils"
 import {
   Command,
   CommandEmpty,
   CommandGroup,
   CommandItem,
   CommandList,
-} from "@/components/ui/command"
-import { Input } from "@/components/ui/input"
+} from "./command"
+import { Input } from "./input"
 
 export type AutocompleteOption = {
   value: string
