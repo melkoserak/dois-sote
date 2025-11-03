@@ -4,7 +4,7 @@ import React, { useEffect, useMemo } from 'react'; // 1. IMPORTE o useMemo
 import { useSimulatorStore } from '@/stores/useSimulatorStore';
 import { useCoverageStore } from '@/stores/useCoverageStore';
 import { NavigationButtons } from '../NavigationButtons';
-import { formatCurrency } from '@/lib/utils';
+import { formatCurrency } from '@goldenbear/ui/lib/utils';
 import { track } from '@/lib/tracking';
 
 export const Step5 = () => {

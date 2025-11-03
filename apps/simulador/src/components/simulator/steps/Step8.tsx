@@ -4,9 +4,9 @@ import React, { useEffect, useMemo } from 'react';
 import { IMaskMixin } from 'react-imask';
 import { useSimulatorStore, Beneficiary } from '@/stores/useSimulatorStore';
 import { NavigationButtons } from '../NavigationButtons';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Autocomplete } from '@/components/ui/autocomplete';
+import { Input } from '@goldenbear/ui/components/input';
+import { Button } from '@goldenbear/ui/components/button';
+import { Autocomplete } from '@goldenbear/ui/components/autocomplete';
 import { track } from '@/lib/tracking';
 import { PlusCircle, Trash2, AlertTriangle } from 'lucide-react';
 

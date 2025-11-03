@@ -1,32 +1,32 @@
-// src/components/simulator/steps/Step9.tsx
 "use client";
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import IframeResizer from 'iframe-resizer-react';
 import { useSimulatorStore } from '@/stores/useSimulatorStore';
 import { useCoverageStore } from '@/stores/useCoverageStore';
-import { getWidgetToken, reserveProposalNumber, getQuestionnaireToken } from '@/services/apiService';
+// --- CORREÇÃO 1: Removido 'getWidgetToken' ---
+import { reserveProposalNumber, getQuestionnaireToken } from '@/services/apiService';
 import { track } from '@/lib/tracking';
 import { Loader2, AlertTriangle, PartyPopper, ArrowLeft, ArrowRight } from 'lucide-react';
 import { NavigationButtons } from '../NavigationButtons';
-import { Button } from '@/components/ui/button';
+import { Button } from '@goldenbear/ui/components/button';
 
 export const Step9 = () => {
   const { dpsAnswers } = useSimulatorStore((state) => state.formData);
   const { setFormData, nextStep, prevStep, resetDpsAnswers } = useSimulatorStore((state) => state.actions);
   const firstName = useSimulatorStore((state) => state.formData.fullName.split(' ')[0] || "");
-
-  
   const simulationDataStore = useCoverageStore((state) => state.coverages);
 
   const [isLoading, setIsLoading] = useState(!dpsAnswers);
   const [error, setError] = useState<string | null>(null);
   const [widgetUrl, setWidgetUrl] = useState<string | null>(null);
+  // --- CORREÇÃO 2: Novo estado para o token ---
+  const [questionnaireToken, setQuestionnaireToken] = useState<string | null>(null);
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
 
   const findFirstQuestionnaireId = useCallback(() => {
+    // ... (código da função existente mantido)
     if (!simulationDataStore || simulationDataStore.length === 0) return 'Venda';
     const firstCoverageWithQuestionnaire = simulationDataStore.find(cov => cov.originalData?.questionariosPorFaixa?.[0]?.questionarios?.[0]?.idQuestionario);
-    // Correção: Adicionado encadeamento opcional para evitar o erro
     return firstCoverageWithQuestionnaire?.originalData?.questionariosPorFaixa?.[0]?.questionarios?.[0]?.idQuestionario || 'Venda';
   }, [simulationDataStore]);
 
@@ -34,8 +34,8 @@ export const Step9 = () => {
     track('step_view', { step: 9, step_name: 'Questionário de Saúde' });
 
     const handleMessage = (event: MessageEvent) => {
+      // ... (código existente de handleMessage mantido)
       if (event.origin !== 'https://widgetshmg.mag.com.br') return;
-
       if (typeof event.data === 'string' && event.data.startsWith('{')) {
         try {
           const data = JSON.parse(event.data);
@@ -54,7 +54,7 @@ export const Step9 = () => {
 
     if (dpsAnswers) {
       setIsLoading(false);
-      return;
+      return () => window.removeEventListener('message', handleMessage);
     }
 
     const initializeWidget = async () => {
@@ -62,27 +62,30 @@ export const Step9 = () => {
       setError(null);
       setWidgetUrl(null);
       try {
-        const { token: widgetToken } = await getWidgetToken();
-        const { proposalNumber } = await reserveProposalNumber(widgetToken);
+        // 1. Reserva a proposta.
+        console.log("[BFF-FRONTEND] Step 9: Chamando reserveProposalNumber()..."); // <-- LOG
+        const { proposalNumber } = await reserveProposalNumber();
         setFormData({ reservedProposalNumber: proposalNumber });
+        console.log("[BFF-FRONTEND] Step 9: Número da proposta RECEBIDO:", proposalNumber); // <-- LOG
+
+        // 2. Busca o token do questionário.
+        console.log("[BFF-FRONTEND] Step 9: Chamando getQuestionnaireToken()..."); // <-- LOG
+        const { token } = await getQuestionnaireToken();
+        setQuestionnaireToken(token); // Salva no estado
+        console.log("[BFF-FRONTEND] Step 9: Token do questionário RECEBIDO (início):", token.substring(0, 10) + "..."); // <-- LOG
 
         const questionnaireId = findFirstQuestionnaireId();
-  const url = `https://widgetshmg.mag.com.br/questionario-Questionario/v2/responder/${questionnaireId}/Venda/${proposalNumber}/0266e8/efb700?listenForToken=true`;
+        const url = `https://widgetshmg.mag.com.br/questionario-Questionario/v2/responder/${questionnaireId}/Venda/${proposalNumber}/0266e8/efb700?listenForToken=true`;
   
-  // Adiciona o log aqui
-  console.log("URL do questionário gerada:", {
-    questionnaireId,
-    proposalNumber,
-    url,
-  });
+        console.log("URL do questionário gerada:", { questionnaireId, proposalNumber, url });
+        setWidgetUrl(url); // Define a URL para renderizar o iframe
 
-  setWidgetUrl(url);
-} catch (err) {
-  const error = err as Error;
-  setError(error.message || "Não foi possível carregar o questionário.");
-  track('questionnaire_error', { error_message: error.message });
-  setIsLoading(false);
-}
+      } catch (err) {
+        const error = err as Error;
+        setError(error.message || "Não foi possível carregar o questionário.");
+        track('questionnaire_error', { error_message: error.message });
+        setIsLoading(false);
+      }
     };
 
     initializeWidget();
@@ -92,8 +95,9 @@ export const Step9 = () => {
     };
   }, [dpsAnswers, setFormData, nextStep, findFirstQuestionnaireId]);
 
-   // Tela de sucesso (quando o questionário está respondido)
+  // Tela de sucesso (quando o questionário está respondido)
   if (dpsAnswers) {
+    // ... (código existente da tela de sucesso mantido)
     return (
       <div className="animate-fade-in text-center">
         <PartyPopper className="h-16 w-16 text-green-500 mx-auto mb-4" />
@@ -119,7 +123,7 @@ export const Step9 = () => {
     );
   }
 
-    // Tela principal (enquanto responde o questionário)
+  // Tela principal (enquanto responde o questionário)
   return (
     <div className="animate-fade-in">
       <h3 tabIndex={-1} className="text-2xl font-medium text-left mb-2 text-foreground outline-none">
@@ -140,16 +144,25 @@ export const Step9 = () => {
               title="Questionário de Saúde MAG"
               checkOrigin={false}
               style={{ width: '1px', minWidth: '100%', border: 0 }}
-              onLoad={async () => {
+              // --- CORREÇÃO 4: Simplificado o onLoad ---
+              onLoad={() => {
+                // --- LOGS ADICIONADOS AQUI ---
+                console.log("[BFF-FRONTEND] Step 9: Iframe onLoad disparado."); 
                 try {
-                  const { token: questionnaireToken } = await getQuestionnaireToken();
-                  if (iframeRef.current) {
+                  if (iframeRef.current && questionnaireToken) {
+                    console.log("[BFF-FRONTEND] Step 9: Token PRONTO. Injetando no iframe...", questionnaireToken.substring(0, 10) + "...");
                     iframeRef.current.contentWindow?.postMessage({
                       event: 'notify', property: 'Token', value: questionnaireToken
                     }, 'https://widgetshmg.mag.com.br');
+                  } else if (!questionnaireToken) {
+                    console.error("[BFF-FRONTEND] Step 9: Iframe carregou, mas o token AINDA NÃO ESTAVA PRONTO.");
+                    throw new Error("Token do questionário não estava pronto no onLoad.");
+                  } else {
+                    console.warn("[BFF-FRONTEND] Step 9: Iframe carregou, token pronto, mas iframeRef.current é nulo.");
                   }
                 } catch (err) {
                    const error = err as Error;
+                   console.error("[BFF-FRONTEND] Step 9: Erro ao injetar token", error);
                    setError("Falha ao autenticar o questionário: " + error.message);
                 } finally {
                   setIsLoading(false);

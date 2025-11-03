@@ -1,7 +1,7 @@
 // src/components/simulator/NavigationButtons.tsx
 "use client";
 import { ArrowLeft, ArrowRight } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Button } from '@goldenbear/ui/components/button';
 import { useSimulatorStore } from '@/stores/useSimulatorStore';
 
 type NavigationButtonsProps = { 

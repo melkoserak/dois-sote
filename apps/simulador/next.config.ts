@@ -4,14 +4,13 @@ const nextConfig = {
   basePath: '/simulador',
   assetPrefix: '/simulador',
 
-  // 2. MANTÉM A EXPORTAÇÃO ESTÁTICA
-  output: 'export',
+  // 2. REMOVA OU COMENTE ESTA LINHA:
+  // output: 'export', // <-- ESTA LINHA CAUSA O ERRO 404 NAS APIs
+
   reactStrictMode: false,
   images: {
     unoptimized: true,
   },
-
-  // 3. REMOVEMOS O PROXY (rewrites). NÃO É MAIS NECESSÁRIO.
 };
 
 module.exports = nextConfig;

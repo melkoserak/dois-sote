@@ -7,8 +7,8 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from "@/components/ui/sheet";
-import { sanitizeHtml } from "@/lib/utils"; // 1. Importe a nova função
+} from "@goldenbear/ui/components/sheet";
+import { sanitizeHtml } from "@goldenbear/ui//lib/utils"; // 1. Importe a nova função
 
 interface Props {
   title: string;

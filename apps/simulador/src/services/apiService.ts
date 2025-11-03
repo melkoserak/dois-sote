@@ -1,61 +1,63 @@
-// src/services/apiService.ts
-import { useSimulatorStore } from '@/stores/useSimulatorStore';
-
-// URL base da API REST do WordPress (SEU SITE ONLINE)
-const WP_API_BASE_URL = 'https://www.goldenbearseguros.com.br/wp-json/mag-simulator/v1';
-const API_BASE_URL = WP_API_BASE_URL;
-
 const getApiUrl = (endpoint: string): string => {
   const cleanEndpoint = endpoint.startsWith('/') ? endpoint.substring(1) : endpoint;
-  return `${API_BASE_URL}/${cleanEndpoint}`;
+  
+  // --- A CORREÇÃO ESTÁ AQUI ---
+  // Vamos adicionar o /simulador manualmente para garantir que a URL
+  // esteja correta, correspondendo ao basePath do next.config.ts
+  const correctUrl = `/simulador/api/${cleanEndpoint}`;
+  
+  console.log(`[BFF-FRONTEND] Chamando API interna: ${correctUrl}`);
+  
+  return correctUrl;
 };
 
-// --- INÍCIO DA ADIÇÃO ---
-// Tipagem para as opções de profissão (precisa estar definida aqui também)
 export interface ProfessionOption {
   value: string;
   label: string;
 }
 
-/**
- * Busca a lista de profissões do backend.
- */
 export const getProfessions = async (): Promise<ProfessionOption[]> => {
+  const url = getApiUrl('professions'); // Gera a URL correta
   try {
-    const nonce = useSimulatorStore.getState().wpNonce;
-    if (!nonce) {
-       console.error("Nonce não está disponível para getProfessions.");
-       // throw new Error("WordPress Nonce não encontrado.");
-    }
-    console.log(`Usando Nonce para getProfessions: ${nonce}`);
-
-    const response = await fetch(getApiUrl('professions'), { // <-- getApiUrl
+    const response = await fetch(url, { 
       method: 'GET',
-      headers: {
-        ...(nonce && { 'X-WP-Nonce': nonce }),
-      },
-      credentials: 'include',
+    });
+
+    // --- LOG DE DEBUG (Aparecerá no CONSOLE DO NAVEGADOR) ---
+    console.log(`[BFF-FRONTEND] Resposta de ${url}:`, {
+      status: response.status,
+      ok: response.ok,
+      statusText: response.statusText,
     });
 
     if (!response.ok) {
-      const error = await response.json().catch(() => ({ error: 'Falha ao buscar profissões e decodificar erro.' })); // Tratamento de erro aprimorado
-      throw new Error(error.error || `Falha ao buscar profissões (${response.statusText})`);
+      const errorText = await response.text(); // Pega o texto do erro (pode ser HTML 404)
+      console.error("[BFF-FRONTEND] Resposta de erro (texto):", errorText);
+      
+      const error = { error: `Falha ao buscar profissões (${response.statusText})` };
+      throw new Error(error.error);
     }
 
     const data: { Auxiliar: string; Descricao: string }[] = await response.json();
-    // A conversão para ProfessionOption está correta
     return data.map((prof) => ({
       value: prof.Auxiliar,
       label: prof.Descricao,
     }));
 
   } catch (error) {
-     console.error("Erro na API de profissões:", error);
-     throw error; // Re-lança o erro para ser tratado onde a função for chamada
+    console.error(`[BFF-FRONTEND] Erro final em getProfessions (${url}):`, error);
+    //
+    throw new Error(`Falha ao buscar profissões. Verifique o console do terminal (Node.js) para o erro 404 ou 500.`);
   }
 };
 
-// Tipagem para os dados da simulação
+// (O restante do seu arquivo apiService.ts... cole-o aqui)
+// ...
+// ... (getSimulation, getWidgetToken, etc.)
+// ...
+// --- Copie o resto do seu apiService.ts aqui ---
+
+// Interface de payload da simulação para garantir que está aqui
 interface SimulationPayload {
   mag_nome_completo: string;
   mag_cpf: string;
@@ -66,17 +68,12 @@ interface SimulationPayload {
   mag_profissao_cbo: string;
 }
 
-/**
- * Envia os dados do formulário para obter uma simulação.
- */
 export const getSimulation = async (formData: SimulationPayload) => {
+  const url = getApiUrl('simulation');
   try {
-    const response = await fetch(getApiUrl('simulation'), {
+    const response = await fetch(url, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(formData),
     });
 
@@ -87,12 +84,11 @@ export const getSimulation = async (formData: SimulationPayload) => {
     
     return await response.json();
   } catch (error) {
-    console.error("Erro na chamada da simulação:", error);
+    console.error(`Erro na chamada da simulação (${url}):`, error);
     throw error;
   }
 };
 
-// Tipagem para a resposta da API ViaCEP
 export interface AddressData {
   logradouro: string;
   bairro: string;
@@ -100,9 +96,6 @@ export interface AddressData {
   uf: string;
 }
 
-/**
- * Busca dados de endereço a partir de um CEP (API pública ViaCEP).
- */
 export const getAddressByZipCode = async (zipCode: string): Promise<AddressData> => {
   const cleanedZip = zipCode.replace(/\D/g, '');
   if (cleanedZip.length !== 8) throw new Error('CEP deve conter 8 dígitos.');
@@ -126,40 +119,27 @@ export const getAddressByZipCode = async (zipCode: string): Promise<AddressData>
   }
 };
 
-/**
- * Busca o token principal para os widgets.
- */
 export const getWidgetToken = async (): Promise<{ token: string }> => {
+  const url = getApiUrl('widget/token');
   try {
-    const response = await fetch(getApiUrl('widget/token'), {
-      method: 'POST',
-      credentials: 'include',
-    });
-    
+    const response = await fetch(url, { method: 'POST' });
     if (!response.ok) {
       const error = await response.json();
       throw new Error(error.error || 'Falha ao obter token do widget.');
     }
-    
     return await response.json();
   } catch (error) {
-    console.error("Erro na API getWidgetToken:", error);
+    console.error(`Erro na API getWidgetToken (${url}):`, error);
     throw error;
   }
 };
 
-/**
- * Reserva um número de proposta usando o token do widget.
- */
-export const reserveProposalNumber = async (token: string): Promise<{ proposalNumber: string }> => {
+export const reserveProposalNumber = async (): Promise<{ proposalNumber: string }> => {
+  const url = getApiUrl('proposal/reserve');
   try {
-    const response = await fetch(getApiUrl('proposal/reserve'), {
+    const response = await fetch(url, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      credentials: 'include',
-      body: JSON.stringify({ token }),
+      headers: { 'Content-Type': 'application/json' },
     });
     
     if (!response.ok) {
@@ -169,71 +149,49 @@ export const reserveProposalNumber = async (token: string): Promise<{ proposalNu
     
     return await response.json();
   } catch (error) {
-    console.error("Erro na API reserveProposalNumber:", error);
+    console.error(`Erro na API reserveProposalNumber (${url}):`, error);
     throw error;
   }
 };
 
-/**
- * Busca o token específico para o widget de questionário.
- */
 export const getQuestionnaireToken = async (): Promise<{ token: string }> => {
+  const url = getApiUrl('questionnaire/token');
   try {
-    const response = await fetch(getApiUrl('questionnaire/token'), {
-      method: 'POST',
-      credentials: 'include',
-    });
-    
+    const response = await fetch(url, { method: 'POST' });
     if (!response.ok) {
       const error = await response.json();
       throw new Error(error.error || 'Falha ao obter token do questionário.');
     }
-    
     return await response.json();
   } catch (error) {
-    console.error("Erro na API getQuestionnaireToken:", error);
+    console.error(`Erro na API getQuestionnaireToken (${url}):`, error);
     throw error;
   }
 };
 
-/**
- * Busca o token específico para o widget de pagamento.
- */
 export const getPaymentToken = async (): Promise<{ token: string }> => {
+  const url = getApiUrl('payment/token');
   try {
-    const response = await fetch(getApiUrl('payment/token'), {
-      method: 'POST',
-      credentials: 'include',
-    });
-    
+    const response = await fetch(url, { method: 'POST' });
     if (!response.ok) {
       const error = await response.json();
       throw new Error(error.error || 'Falha ao obter token de pagamento.');
     }
-    
     return await response.json();
   } catch (error) {
-    console.error("Erro na API getPaymentToken:", error);
+    console.error(`Erro na API getPaymentToken (${url}):`, error);
     throw error;
   }
 };
 
-/**
- * Payload para submissão da proposta.
- */
-type ProposalPayload = Record<string, unknown>;
+type ProposalPayload = Record<string, any>;
 
-/**
- * Envia a proposta final para o backend.
- */
 export const submitProposal = async (payload: ProposalPayload) => {
+  const url = getApiUrl('proposal');
   try {
-    const response = await fetch(getApiUrl('proposal'), {
+    const response = await fetch(url, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
     });
 
@@ -244,7 +202,7 @@ export const submitProposal = async (payload: ProposalPayload) => {
     
     return await response.json();
   } catch (error) {
-    console.error("Erro na submissão da proposta:", error);
+    console.error(`Erro na submissão da proposta (${url}):`, error);
     throw error;
   }
 };

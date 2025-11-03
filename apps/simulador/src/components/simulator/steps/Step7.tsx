@@ -4,10 +4,10 @@ import React, { useEffect, useState } from 'react';
 import { IMaskMixin } from 'react-imask';
 import { useSimulatorStore } from '@/stores/useSimulatorStore';
 import { NavigationButtons } from '../NavigationButtons';
-import { Input } from '@/components/ui/input';
-import { Autocomplete } from '@/components/ui/autocomplete';
+import { Input } from '@goldenbear/ui/components/input';
+import { Autocomplete } from '@goldenbear/ui/components/autocomplete';
 import { track } from '@/lib/tracking';
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@goldenbear/ui/components/sheet";
 import { Info } from 'lucide-react';
 import { ppeContent } from '@/lib/ppe-content';
 

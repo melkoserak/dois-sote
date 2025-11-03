@@ -43,12 +43,10 @@ export const SimulatorForm = () => {
  const currentStep = useSimulatorStore((state) => state.currentStep);
   const formRef = useRef<HTMLDivElement>(null);
   const hydrateFromStorage = useSimulatorStore((state) => state.actions.hydrateFromStorage);
-  const fetchWpNonce = useSimulatorStore((state) => state.actions.fetchWpNonce); // <-- Pegue a ação
   
   useEffect(() => {
     hydrateFromStorage();
-    fetchWpNonce(); // <-- Chame a ação para buscar o nonce
-  }, [hydrateFromStorage, fetchWpNonce]);
+  }, [hydrateFromStorage]);
 
   // Este useEffect continua útil para acessibilidade e título da página
   useEffect(() => {

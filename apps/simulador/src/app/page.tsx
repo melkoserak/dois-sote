@@ -12,7 +12,8 @@ export default function SimulatorPage() {
       <header className="w-full max-w-5xl flex items-center">
         {/* 2. Substitua <img> por <Image /> */}
         <Image 
-          src="/logo-golden-bear.png"
+          // --- A CORREÇÃO ESTÁ AQUI ---
+          src={"/simulador/logo-golden-bear.png"}
           alt="Logo Golden Bear" 
           width={56} 
           height={16} 

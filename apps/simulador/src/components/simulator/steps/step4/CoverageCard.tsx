@@ -1,10 +1,10 @@
 // src/components/simulator/steps/step4/CoverageCard.tsx
 "use client";
 import { useCoverageStore, Coverage } from '@/stores/useCoverageStore';
-import { Switch } from '@/components/ui/switch';
-import { Slider } from '@/components/ui/slider';
-import { formatCurrency, stripHtml } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
+import { Switch } from '@goldenbear/ui/components/switch';
+import { Slider } from '@goldenbear/ui/components/slider';
+import { formatCurrency, stripHtml } from '@goldenbear/ui/lib/utils';
+import { Button } from '@goldenbear/ui/components/button';
 import { ChevronRight } from 'lucide-react';
 import { CoverageDetailsSheet } from './CoverageDetailsSheet'; // 1. Importe o novo componente
 

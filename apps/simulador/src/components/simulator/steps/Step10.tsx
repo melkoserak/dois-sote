@@ -9,7 +9,7 @@ import { getPaymentToken } from '@/services/apiService';
 import { track } from '@/lib/tracking';
 import { Loader2, AlertTriangle, CreditCard, Landmark } from 'lucide-react';
 import { NavigationButtons } from '../NavigationButtons';
-import { cn } from '@/lib/utils';
+import { cn } from '@goldenbear/ui/lib/utils';
 
 export const Step10 = () => {
   const { formData } = useSimulatorStore();

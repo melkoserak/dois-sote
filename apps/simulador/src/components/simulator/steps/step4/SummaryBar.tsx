@@ -1,7 +1,7 @@
 // src/components/simulator/steps/step4/SummaryBar.tsx
 "use client";
 import { useCoverageStore } from '@/stores/useCoverageStore';
-import { formatCurrency } from '@/lib/utils';
+import { formatCurrency } from '@goldenbear/ui/lib/utils';
 
 export const SummaryBar = () => {
   const totalPremium = useCoverageStore((state) => state.getTotalPremium());

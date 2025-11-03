@@ -6,7 +6,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription, // 1. Importe o componente Description
-} from "@/components/ui/dialog";
+} from "@goldenbear/ui/components/dialog";
 
 interface Props {
   isOpen: boolean;

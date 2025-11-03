@@ -89,26 +89,25 @@ type SimulatorState = {
   currentStep: number;
   formData: FormData;
   validationStatus: ValidationStatus;
-  wpNonce: string | null; // <-- NOVO CAMPO PARA O NONCE
- actions: {
+  // wpNonce: string | null; // <-- REMOVA ESTA LINHA
+  actions: {
     nextStep: () => void;
     prevStep: () => void;
     setFormData: (data: Partial<FormData>) => void;
-    setValidationStatus: (status: Partial<ValidationStatus>) => void; // Certifique-se que está aqui
-    reset: () => void; // Certifique-se que está aqui
-    hydrateFromStorage: () => void; // Certifique-se que está aqui
-    addBeneficiary: () => void; // Certifique-se que está aqui
-    removeBeneficiary: (id: string) => void; // Certifique-se que está aqui
-    updateBeneficiary: (id: string, data: UpdateBeneficiaryData) => void; // Certifique-se que está aqui
-    resetDpsAnswers: () => void; // Certifique-se que está aqui
-    setWpNonce: (nonce: string | null) => void;
-    fetchWpNonce: () => Promise<void>;
+    setValidationStatus: (status: Partial<ValidationStatus>) => void;
+    reset: () => void;
+    hydrateFromStorage: () => void;
+    addBeneficiary: () => void;
+    removeBeneficiary: (id: string) => void;
+    updateBeneficiary: (id: string, data: UpdateBeneficiaryData) => void;
+    resetDpsAnswers: () => void;
+    // setWpNonce: (nonce: string | null) => void; // <-- REMOVA ESTA LINHA
+    // fetchWpNonce: () => Promise<void>; // <-- REMOVA ESTA LINHA
   }
 };
 
 // --- INÍCIO DA CORREÇÃO ---
 const initialState: Omit<SimulatorState, 'actions'> = {
-  wpNonce: null,
   currentStep: 1,
   formData: {
     fullName: "", cpf: "", email: "", phone: "", state: "", consent: false,
@@ -234,40 +233,6 @@ export const useSimulatorStore = create<SimulatorState>((set, get) => ({ // <-- 
       }
       return { formData: newFormData };
     }),
-
-// Ações novas (nonce)
-    setWpNonce: (nonce) => set({ wpNonce: nonce }),
-
-    fetchWpNonce: async () => {
-      // Usa 'get()' que é passado como argumento para 'create'
-      if (get().wpNonce || typeof window === 'undefined') { // <-- Usa get() aqui
-        console.log("Nonce já existe ou estamos no servidor, não buscando.");
-        return;
-      }
-      try {
-        console.log("Buscando Nonce do WordPress...");
-        const nonceUrl = getApiUrl('nonce');
-        console.log("URL do Nonce:", nonceUrl);
-        const response = await fetch(nonceUrl, {
-          method: 'GET',
-          credentials: 'include',
-        });
-        if (!response.ok) {
-          throw new Error(`Falha ao buscar nonce: ${response.statusText}`);
-        }
-        const data = await response.json();
-        if (data.nonce) {
-          console.log("Nonce recebido:", data.nonce);
-          set({ wpNonce: data.nonce });
-        } else {
-          throw new Error('Resposta da API de Nonce não continha um nonce.');
-        }
-      } catch (error) {
-        console.error("Erro ao buscar Nonce do WordPress:", error);
-        set({ wpNonce: null });
-      }
-    },
-    // --- FIM DE TODAS AS AÇÕES ---
   }
 }));
   

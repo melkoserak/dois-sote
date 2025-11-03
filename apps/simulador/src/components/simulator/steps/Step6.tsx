@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { IMaskMixin } from 'react-imask';
 import { useSimulatorStore } from '@/stores/useSimulatorStore';
 import { NavigationButtons } from '../NavigationButtons';
-import { Input } from '@/components/ui/input';
+import { Input } from '@goldenbear/ui/components/input';
 import { track } from '@/lib/tracking';
 import { getAddressByZipCode } from '@/services/apiService';
 import { Loader2 } from 'lucide-react';

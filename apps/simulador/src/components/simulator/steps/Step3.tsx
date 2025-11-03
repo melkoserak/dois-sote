@@ -3,8 +3,8 @@
 import React, { useEffect, useState } from 'react';
 import { NavigationButtons } from '../NavigationButtons';
 import { useSimulatorStore } from '@/stores/useSimulatorStore';
-import { Autocomplete } from '@/components/ui/autocomplete';
-import { Input } from '@/components/ui/input';
+import { Autocomplete } from '@goldenbear/ui/components/autocomplete';
+import { Input } from '@goldenbear/ui/components/input';
 import { getProfessions, ProfessionOption } from '@/services/apiService';
 import { Check } from 'lucide-react';
 import { track } from '@/lib/tracking';

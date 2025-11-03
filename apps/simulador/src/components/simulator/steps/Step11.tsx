@@ -6,7 +6,7 @@ import { useCoverageStore, type ApiCoverage } from '@/stores/useCoverageStore'; 
 import { submitProposal } from '@/services/apiService';
 import { track } from '@/lib/tracking';
 import { Loader2, AlertTriangle, PartyPopper } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Button } from '@goldenbear/ui/components/button';
 
 // Tipos para estruturar os dados do mapa de produtos
 interface MappedCoverage extends ApiCoverage {

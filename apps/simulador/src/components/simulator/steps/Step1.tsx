@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import { NavigationButtons } from '../NavigationButtons';
 import { useSimulatorStore } from '@/stores/useSimulatorStore';
-import { Input } from '@/components/ui/input';
+import { Input } from '@goldenbear/ui/components/input';
 import { Check } from 'lucide-react';
 import { track } from '@/lib/tracking'; // 1. Importe a nova função 'track'
 
