@@ -1,14 +1,10 @@
 import Link from 'next/link';
 import Image from 'next/image';
+// --- IMPORTAÇÃO DE ÍCONES (PERFORMANCE) ---
+import { Facebook, Instagram, Linkedin, Youtube } from 'lucide-react';
 
 export const Footer = () => {
-  const logoUrl = '/imagens/logo-golden-bear.svg';
-  const socialIcons = {
-    facebook: '/imagens/icon-facebook.svg',
-    instagram: '/imagens/icon-instagram.svg',
-    linkedin: '/imagens/icon-linkedin.svg',
-    youtube: '/imagens/icon-youtube.svg',
-  };
+  const logoUrl = '/imagens/logo-golden-bear.svg'; // Logo é <Image>
 
   return (
     <footer id="colophon" className="site-footer bg-light-gray-color py-20 text-text-light">
@@ -61,14 +57,31 @@ export const Footer = () => {
 
           {/* Coluna 5: Redes Sociais */}
           <div className="footer-widget-5">
-            <h4 className="widget-title mb-5 text-base font-bold text-text-color">Rede Sociais</h4>
+            <h4 className="widget-title mb-5 text-base font-bold text-text">Rede Sociais</h4>
+            {/* --- ÍCONES DE ALTA PERFORMANCE --- */}
             <ul className="social-links flex flex-wrap gap-4">
-              <li><a href="#" target="_blank" rel="noopener noreferrer"><Image src={socialIcons.facebook} alt="Facebook" width={24} height={24} className="opacity-70 transition-opacity hover:opacity-100" /></a></li>
-              <li><a href="#" target="_blank" rel="noopener noreferrer"><Image src={socialIcons.instagram} alt="Instagram" width={24} height={24} className="opacity-70 transition-opacity hover:opacity-100" /></a></li>
-              <li><a href="#" target="_blank" rel="noopener noreferrer"><Image src={socialIcons.linkedin} alt="LinkedIn" width={24} height={24} className="opacity-70 transition-opacity hover:opacity-100" /></a></li>
+              <li>
+                <a href="#" target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="opacity-70 transition-opacity hover:opacity-100">
+                  <Facebook className="h-6 w-6" />
+                </a>
+              </li>
+              <li>
+                <a href="#" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="opacity-70 transition-opacity hover:opacity-100">
+                  <Instagram className="h-6 w-6" />
+                </a>
+              </li>
+              <li>
+                <a href="#" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" className="opacity-70 transition-opacity hover:opacity-100">
+                  <Linkedin className="h-6 w-6" />
+                </a>
+              </li>
+              <li>
+                <a href="#" target="_blank" rel="noopener noreferrer" aria-label="YouTube" className="opacity-70 transition-opacity hover:opacity-100">
+                  <Youtube className="h-6 w-6" />
+                </a>
+              </li>
             </ul>
           </div>
-
         </div>
 
         {/* Copyright */}
